@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/N_IV_BG"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/bg_n_1"
+        tools:layout_editor_absoluteY="411dp"/>
+
+    <TextView
+        android:id="@+id/N_TV_playerName"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_below="@+id/N_TV_name"
+        android:layout_toEndOf="@+id/N_B_main"
+        android:text="TextView"
+        android:textAlignment="viewStart"
+        android:textColor="@color/my_black"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/N_TV_name"
+        android:layout_width="110dp"
+        android:layout_height="38dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp"
+        android:layout_toEndOf="@+id/N_B_main"
+        android:text="TextView"
+        android:textAlignment="viewStart"
+        android:textColor="@color/my_black"
+        android:textSize="18sp"/>
+
+    <ImageButton
+        android:id="@+id/N_B_main"
+        android:layout_width="73dp"
+        android:layout_height="73dp"
+        android:layout_alignBottom="@+id/N_IV_BG"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/main"/>
+
+    <ImageButton
+        android:id="@+id/N_B_close"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="18dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/t_close"
+        android:layout_marginTop="@+id/N_IV_BG"
+        android:layout_marginBottom="@+id/N_IV_BG"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"/>
+
+    <ImageButton
+        android:id="@+id/N_B_next"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/t_next"
+        android:layout_alignTop="@+id/N_B_close"
+        android:layout_toEndOf="@+id/N_B_start"/>
+
+    <ImageButton
+        android:id="@+id/N_B_start"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/t_start"
+        android:layout_alignTop="@+id/N_B_close"
+        android:layout_toEndOf="@+id/N_TV_name"/>
+
+
+</RelativeLayout>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent">-->
+
+<!--<ImageView-->
+    <!--android:id="@+id/N_IV_BG"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="0dp"-->
+    <!--android:layout_marginRight="0dp"-->
+    <!--android:scaleType="fitXY"-->
+    <!--app:layout_constraintHorizontal_bias="0.0"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:srcCompat="@drawable/bg_n_1"-->
+    <!--tools:layout_editor_absoluteY="411dp"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/N_TV_playerName"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="28dp"-->
+    <!--android:text="TextView"-->
+    <!--android:textAlignment="viewStart"-->
+    <!--android:textColor="@color/my_black"-->
+    <!--android:textSize="16sp"-->
+    <!--android:layout_below="@+id/N_TV_name"-->
+    <!--android:layout_toEndOf="@+id/N_B_main"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/N_TV_name"-->
+    <!--android:layout_width="110dp"-->
+    <!--android:layout_height="38dp"-->
+    <!--android:layout_marginTop="14dp"-->
+    <!--android:text="TextView"-->
+    <!--android:textAlignment="viewStart"-->
+    <!--android:textColor="@color/my_black"-->
+    <!--android:textSize="18sp"-->
+    <!--app:layout_constraintBottom_toTopOf="@+id/N_TV_playerName"-->
+    <!--app:layout_constraintHorizontal_bias="0.0"-->
+    <!--app:layout_constraintLeft_toRightOf="@+id/N_B_main"-->
+    <!--app:layout_constraintRight_toLeftOf="@+id/N_B_start"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/N_IV_BG"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_toEndOf="@+id/N_B_main"/>-->
+
+<!--<ImageButton-->
+    <!--android:id="@+id/N_B_main"-->
+    <!--android:layout_width="73dp"-->
+    <!--android:layout_height="73dp"-->
+    <!--android:layout_alignBottom="@+id/N_IV_BG"-->
+    <!--android:layout_alignParentStart="true"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:scaleType="centerInside"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintLeft_toLeftOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/N_IV_BG"-->
+    <!--app:srcCompat="@drawable/main"/>-->
+
+<!--<ImageButton-->
+    <!--android:id="@+id/N_B_close"-->
+    <!--android:layout_width="45dp"-->
+    <!--android:layout_height="45dp"-->
+    <!--android:layout_alignParentEnd="true"-->
+    <!--android:layout_alignTop="@+id/N_TV_name"-->
+    <!--android:layout_marginEnd="19dp"-->
+    <!--android:layout_marginTop="12dp"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:scaleType="centerInside"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintRight_toRightOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/N_IV_BG"-->
+    <!--app:srcCompat="@drawable/t_close"/>-->
+
+<!--<ImageButton-->
+    <!--android:id="@+id/N_B_next"-->
+    <!--android:layout_width="45dp"-->
+    <!--android:layout_height="45dp"-->
+    <!--android:layout_alignTop="@+id/N_B_close"-->
+    <!--android:layout_marginEnd="15dp"-->
+    <!--android:layout_toStartOf="@+id/N_B_close"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:scaleType="centerInside"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintRight_toLeftOf="@+id/N_B_close"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/N_IV_BG"-->
+    <!--app:srcCompat="@drawable/t_next"/>-->
+
+<!--<ImageButton-->
+    <!--android:id="@+id/N_B_start"-->
+    <!--android:layout_width="45dp"-->
+    <!--android:layout_height="45dp"-->
+    <!--android:layout_alignTop="@+id/N_B_next"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:layout_toStartOf="@+id/N_B_next"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--android:scaleType="centerInside"-->
+    <!--app:layout_constraintBottom_toBottomOf="@+id/N_IV_BG"-->
+    <!--app:layout_constraintRight_toLeftOf="@+id/N_B_next"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/N_IV_BG"-->
+    <!--app:srcCompat="@drawable/t_start"/>-->
+
+<!--<ImageButton-->
+    <!--android:id="@+id/imageButton5"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@android:color/transparent"-->
+    <!--app:srcCompat="@drawable/p_list"-->
+    <!--android:layout_alignBottom="@+id/N_B_start"-->
+    <!--android:layout_toEndOf="@+id/N_TV_playerName"/>-->
+
+
+<!--</RelativeLayout>-->
