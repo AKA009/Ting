@@ -18,9 +18,9 @@
 
     <TextView
         android:id="@+id/N_TV_playerName"
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="28dp"
-        android:layout_below="@+id/N_TV_name"
+        android:layout_marginTop="60dp"
         android:layout_toEndOf="@+id/N_B_main"
         android:text="TextView"
         android:textAlignment="viewStart"
@@ -29,10 +29,10 @@
 
     <TextView
         android:id="@+id/N_TV_name"
-        android:layout_width="110dp"
-        android:layout_height="38dp"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/N_B_main"
         android:text="TextView"
         android:textAlignment="viewStart"
@@ -59,8 +59,6 @@
         android:background="@android:color/transparent"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/t_close"
-        android:layout_marginTop="@+id/N_IV_BG"
-        android:layout_marginBottom="@+id/N_IV_BG"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"/>
 
@@ -71,8 +69,8 @@
         android:background="@android:color/transparent"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/t_next"
-        android:layout_alignTop="@+id/N_B_close"
-        android:layout_toEndOf="@+id/N_B_start"/>
+        android:layout_toLeftOf="@+id/N_B_close"
+        android:layout_centerVertical="true"/>
 
     <ImageButton
         android:id="@+id/N_B_start"
@@ -81,8 +79,8 @@
         android:background="@android:color/transparent"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/t_start"
-        android:layout_alignTop="@+id/N_B_close"
-        android:layout_toEndOf="@+id/N_TV_name"/>
+        android:layout_toLeftOf="@+id/N_B_next"
+        android:layout_centerVertical="true"/>
 
 
 </RelativeLayout>
