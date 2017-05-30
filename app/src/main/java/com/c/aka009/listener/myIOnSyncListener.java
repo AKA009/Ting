@@ -1,9 +1,8 @@
 package com.c.aka009.listener;
 
 /**
- * Created by A.K.A 009 on 2017/5/21.
+ * 用于监听自定义回调函数的接口
  */
-
 public interface myIOnSyncListener
 {
     void NeedSync();

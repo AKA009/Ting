@@ -10,87 +10,127 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by A.K.A 009 on 2017/5/20.
+ * 作为列表项的数据类，用来存储歌曲相关信息
  */
-
 public class ListUnits
 {
-    private String _name;
-    private String _path;
-    private String _duration;
-    private String _playerName;
-    private String _type;
+    //region 声明数据
+    private String _name;                   //歌曲名称
+    private String _path;                   //歌曲路径
+    private String _duration;               //歌曲持续时间
+    private String _playerName;             //歌手名称
+    private String _type;                   //文件类型
 
-    private CharSequence _cs_Name;
-    private CharSequence _cs_PlayerName;
+    private CharSequence _cs_Name;          //带背景的名称
+    private CharSequence _cs_PlayerName;    //带背景的歌手名
+    //endregion
 
+    //region Set方法
+    /**
+     * 输入扫描得到的“data”字段
+     * @param data 输入字段
+     */
     public void SetData(String data)
     {
         this._path = data;
     }
+
+    /**
+     * 输入扫描得到的“display_name”字段
+     * @param display_name 输入字段
+     */
     public void SetDisplay_name(String display_name)
     {
-        String temp[] = display_name.split("\\.");
-        _name = temp[0];
-        _type = "."+temp[1];
+        String temp[] = display_name.split("\\.");  //将输入的“display_name”字段从“.”字符切分
+        _name = temp[0];                            //切分后文件名存入“name”
+        _type = "."+temp[1];                        //切分后扩展名存入“type”
     }
+
+    /**
+     * 输入扫描得到的“duration”字段
+     * @param duration 输入字段
+     */
     public void SetDuration(String duration)
     {
-        String min_s = new String();
-        String sec_s = new String();
+        //声明分钟和秒钟两个空字符串
+        String min_s = "";
+        String sec_s = "";
 
+        //将输入的字符串格式的歌曲长度转换为long格式
         long d = Long.parseLong(duration);
+
+        //将毫秒转换为分和秒的值并存入两个long变量（少于1秒的值被舍去）
         long min_l = d/(60*1000);
         long sec_l = d%(60*1000);
 
-        if (min_l<10l)
+        //region 格式化时间值
+        //将分钟的数值转换为MM:SS的格式，并存入字符串变量
+        if (min_l< 10L)
         {
             min_s = "0"+min_l+"";
         }
-        else if (min_l>10l)
+        else if (min_l>= 10L)
         {
             min_s = min_l+"";
         }
-        else if (min_l == 0l)
+        else if (min_l == 0L)
         {
             min_s = "00";
         }
 
+        //将秒钟的数值转换为MM:SS的格式，并存入字符串变量
         sec_l = sec_l/1000;
-        if (sec_l<10l)
+        if (sec_l< 10L)
         {
             sec_s = "0"+sec_l+"";
         }
-        else if (sec_l>10l)
+        else if (sec_l>= 10L)
         {
             sec_s = sec_l+"";
         }
-        else if (sec_l == 0l)
+        else if (sec_l == 0L)
         {
             sec_s = "00";
         }
+        //endregion
 
+        //输出到长度字符串
         _duration = min_s+"："+sec_s;
     }
+
+    /**
+     * 输入扫描得到的“artist”字段
+     * @param artist 输入字段
+     */
     public void SetArtist(String artist)
     {
         _playerName = artist;
     }
 
+    /**
+     * 设置列表项中歌曲名和歌手名的高亮与取消
+     * @param setOn 是否要设置为高亮
+     * @param context 当前上下文
+     */
     public void SetTitleHighLight(boolean setOn , Context context)
     {
+        //如果需要高亮就把cs数据设置为带背景色的字符串
         if (setOn)
         {
             _cs_Name = GetSpannableName(context);
             _cs_PlayerName = GetSpannablePlayerName(context);
         }
+        //如果不需要高亮就把cs数据设置为普通的字符串
         else
         {
             _cs_Name = GetName();
             _cs_PlayerName = GetPlayerName();
         }
     }
+    //endregion
 
+
+    //region Get方法
     public String GetName()
     {
         return _name;
@@ -112,40 +152,46 @@ public class ListUnits
         return _type;
     }
 
-    public static List<HashMap<String, String>> ListToListOfMaps (List<ListUnits> list_in)
+    public CharSequence GetCSName()
     {
-        List<HashMap<String, String>> list_out = new ArrayList<>();
-
-        for (ListUnits unit : list_in)
-        {
-            HashMap<String, String> map = new HashMap<>();
-
-            map.put("Name",unit.GetName() );
-            map.put("Path", unit.GetPath());
-            map.put("Duration", unit.GetDuration());
-            map.put("PlayerName", unit.GetPlayerName());
-            map.put("Type", unit.GetType());
-
-            list_out.add(map);
-        }
-        return list_out;
+        return _cs_Name;
+    }
+    public CharSequence GetCSPlayerName()
+    {
+        return _cs_PlayerName;
     }
 
+    /**
+     * 获取带有浅绿色高亮背景的歌曲名
+     * @param context 上下文
+     * @return 返回高亮歌曲名
+     */
     public SpannableString GetSpannableName(Context context)
     {
         return this._span(this.GetName(),R.color.my_green_L,context);
     }
 
+    /**
+     * 获取带有浅绿色高亮背景的歌手名
+     * @param context 上下文
+     * @return 返回高亮歌手名
+     */
     public SpannableString GetSpannablePlayerName(Context context)
     {
         return this._span(this.GetPlayerName(),R.color.my_green_L,context);
     }
 
+    /**
+     * 获取带有各种不同颜色高亮背景的歌曲扩展名
+     * @param context 上下文
+     * @return 返回高亮扩展名
+     */
     public SpannableString GetSpannableType(Context context)
     {
         int tempColorID = 0;
         String tempString = this.GetType();
 
+        //判断字符串是否相等，为不同的字符串设置不同颜色
         switch (tempString)
         {
             case ".mp3":
@@ -168,43 +214,17 @@ public class ListUnits
                 break;
         }
         return this._span(tempString,tempColorID,context);
+    }
+    //endregion
 
-//        if (tempString .equals(".mp3"))
-//        {
-//            tempColorID = R.color.my_blue_L;
-//        }
-//        else if (tempString .equals(".ogg"))
-//        {
-//            tempColorID = R.color.my_red_L;
-//        }
-//        else if (tempString .equals(".aac"))
-//        {
-//            tempColorID = R.color.my_yellow_L;
-//        }
-//        else if (tempString .equals(".flac"))
-//        {
-//            tempColorID = R.color.my_purple_L;
-//        }
-//        else if (tempString .equals(".wav"))
-//        {
-//            tempColorID = R.color.my_orange_L;
-//        }
-//        else
-//        {
-//            tempColorID = R.color.my_white;
-//        }
-//        return this._span(tempString,tempColorID,context);
-    }
-
-    public CharSequence GetCSName()
-    {
-        return _cs_Name;
-    }
-    public CharSequence GetCSPlayerName()
-    {
-        return _cs_PlayerName;
-    }
-    
+    //region 工具方法
+    /**
+     * 将指定的字符串设置为带有背景色的字符串
+     * @param string_in 输入字符串
+     * @param colorID 要指定的背景色的ID
+     * @param context 上下文
+     * @return 返回加工过的字符串
+     */
     private SpannableString _span (String string_in ,int colorID , Context context)
     {
         //将字符串转换为SpannableString对象
@@ -221,4 +241,29 @@ public class ListUnits
         spannableString.setSpan(backgroundColorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString;
     }
+
+    /**
+     * 静态方法，将列表映射成一个装有散列图的列表
+     * @param list_in 存有原始数据的列表
+     * @return 返回内含散列图的列表结构
+     */
+    public static List<HashMap<String, String>> ST_ListToListOfMaps (List<ListUnits> list_in)
+    {
+        List<HashMap<String, String>> list_out = new ArrayList<>();
+
+        for (ListUnits unit : list_in)
+        {
+            HashMap<String, String> map = new HashMap<>();
+
+            map.put("Name",unit.GetName() );
+            map.put("Path", unit.GetPath());
+            map.put("Duration", unit.GetDuration());
+            map.put("PlayerName", unit.GetPlayerName());
+            map.put("Type", unit.GetType());
+
+            list_out.add(map);
+        }
+        return list_out;
+    }
+    //endregion
 }
