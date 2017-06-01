@@ -5,10 +5,17 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
+/**
+ * 音乐播放服务类，用于实现后台播放功能，处理播放逻辑
+ */
 public class MyService extends Service
 {
     //region 定义播放控制变量
@@ -79,6 +86,100 @@ public class MyService extends Service
 
                 s_start();                      //如果是自动播放完成的，那么肯定处于停止状态。要连续播放，就要调用开始方法
                 _myOnSyncListener.NeedSync();   //再次同步当前（开始播放时）的状态
+            }
+        });
+        //endregion
+
+        //region 注册错误检测监听器
+        _mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener()
+        {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra)
+            {
+                //region 输出错误信息
+                Log.d(TAG, "OnError - Error code: " + what + " Extra code: " + extra);
+                switch (what)
+                {
+                    case -1004:
+                        Log.d(TAG, "MEDIA_ERROR_IO");
+                        break;
+                    case -1007:
+                        Log.d(TAG, "MEDIA_ERROR_MALFORMED");
+                        break;
+                    case 200:
+                        Log.d(TAG, "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK");
+                        break;
+                    case 100:
+                        Log.d(TAG, "MEDIA_ERROR_SERVER_DIED");
+                        break;
+                    case -110:
+                        Log.d(TAG, "MEDIA_ERROR_TIMED_OUT");
+                        break;
+                    case 1:
+                        Log.d(TAG, "MEDIA_ERROR_UNKNOWN");
+                        break;
+                    case -1010:
+                        Log.d(TAG, "MEDIA_ERROR_UNSUPPORTED");
+                        break;
+                }
+                switch (extra)
+                {
+                    case 800:
+                        Log.d(TAG, "MEDIA_INFO_BAD_INTERLEAVING");
+                        break;
+                    case 702:
+                        Log.d(TAG, "MEDIA_INFO_BUFFERING_END");
+                        break;
+                    case 701:
+                        Log.d(TAG, "MEDIA_INFO_METADATA_UPDATE");
+                        break;
+                    case 802:
+                        Log.d(TAG, "MEDIA_INFO_METADATA_UPDATE");
+                        break;
+                    case 801:
+                        Log.d(TAG, "MEDIA_INFO_NOT_SEEKABLE");
+                        break;
+                    case 1:
+                        Log.d(TAG, "MEDIA_INFO_UNKNOWN");
+                        break;
+                    case 3:
+                        Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
+                        break;
+                    case 700:
+                        Log.d(TAG, "MEDIA_INFO_VIDEO_TRACK_LAGGING");
+                        break;
+                }
+                //endregion
+
+                _mediaPlayer.reset();   //重置为初始状态解除错误
+
+                //如果开启随机，则随机挑选一首设置为当前曲目
+                if (_isRandom)
+                {
+                    s_setCurrentMusicRandom();
+                }
+
+                //否则就是顺序循环播放，如果达到表尾则跳转到表头
+                else if (_currentMusicIndex == _MLOLU.size()-1)
+                {
+                    _setCurrentMusic(0);
+                }
+                else
+                {
+                    _currentMusicIndex ++;
+                }
+
+                try
+                {
+                    _mediaPlayer.prepare();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                s_start();
+                _myOnSyncListener.NeedSync();
+                return false;
             }
         });
         //endregion
@@ -278,7 +379,7 @@ public class MyService extends Service
     }
     //endregion
 
-    //region 流程控制方法
+     //region 流程控制方法
     /**
      * 播放服务的退出方法，用于退出播放状态并且释放播放器资源（退出后将无法执行播放逻辑）
      */
@@ -293,7 +394,7 @@ public class MyService extends Service
     }
 
     /**
-     * 播放服务的退出方法，在“需要初始化播放器时”调用，用于初始化组件并进入准备播放状态（默认播放列表第一首歌）
+     * 播放服务的初始化方法，在“需要初始化播放器时”调用，用于初始化组件并进入准备播放状态（默认播放列表第一首歌）
      */
     public void s_initialize()
     {
