@@ -17,10 +17,12 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView P_TV_currentMusicName;
     private TextView P_TV_currentMusicPlayerName;
+
+    private ImageView P_IV_splash;
     //endregion
 
     //region 声明其他对象
@@ -91,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         P_TV_currentMusicPlayerName = (TextView) findViewById(R.id.P_TV_currentMusicPlayerName);
 
         P_LV_1 = (ListView) findViewById(R.id.P_LV_1);
+
+        P_IV_splash = (ImageView) findViewById(R.id.P_IV_splash);
         //endregion
 
         //region 为主界面的按钮设置监听器
@@ -107,11 +113,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         _isRandom_B_On  = false;
         //endregion
 
+        _showSplash(3000);                  //显示3秒钟的splash画面
         _bindServiceConnection();           //开启并绑定服务
         _startNewThreadToGetData();         //开启子线程进行媒体探查并将结果输入列表
         _initializeNotificationBar();       //初始化通知栏并调出通知栏里的控制面板
 
-        //为UI列表的项添加点击事件
+        //region 为UI列表的项添加点击事件
         P_LV_1.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
@@ -120,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 on_P_LVIC_Jump_To(position);    //调用跳转方法，跳转到按下的项的索引位置
             }
         });
+        //endregion
 
         //region 定义广播接收器处理通知栏的按钮事件
         _notificationBarClickReceiver = new BroadcastReceiver()
@@ -389,6 +397,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * 显示splash画面并在指定时间后消失
+     * @param sec 持续时间（毫秒）
+     */
+    private void _showSplash(final int sec)
+    {
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Log.d(">>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                //等待3秒钟
+                try
+                {
+                    Thread.sleep(sec);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+
+                //让splash画面消失
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        P_IV_splash.setVisibility(View.GONE);
+                        Log.d(">>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    }
+                });
+            }
+        }).start();
+    }
+
+    /**
      * 同步UI函数，在需要修改UI视图时调用，用于将UI显示的东西更新为服务中的数据
      */
     private void _syncUI()
@@ -497,6 +541,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //endregion
 
+    //region 工具函数
     /**
      * 二级内部函数，从指定的位置扫描媒体资源，附加到传入的列表中并将其返回，相当于 I += a
      * @param uri 指定的URI位置
@@ -674,6 +719,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+    //endregion
 
 }//MainActivity结束
 
