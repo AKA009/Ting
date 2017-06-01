@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#b63ba3</color>
 
-    <color name="my_green">#20C070</color>
+    <color name="my_green">#20c070</color>
     <color name="my_green_L">#50E298</color>
     <color name="my_blue">#3399CC</color>
     <color name="my_blue_L">#79BBDC</color>
@@ -14,6 +14,7 @@
     <color name="my_orange_L">#FF8962</color>
     <color name="my_red_L">#FD799A</color>
     <color name="my_purple_L">#9A79BB</color>
-    <color name="my_white">#FFFFFF</color>
+    <color name="my_white">#ffffff</color>
     <color name="my_black">#323232</color>
+    <color name="my_black_D">#64323232</color>
 </resources>
