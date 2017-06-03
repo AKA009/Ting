@@ -1,4 +1,4 @@
-package com.c.aka009.listener;
+package com.c.aka009.Ting;
 
 import android.app.Service;
 import android.content.Intent;
@@ -23,6 +23,7 @@ public class MyService extends Service
     private int _currentMusicIndex = 0;
     private boolean _isLooping = false;
     private boolean _isRandom = false;
+    private boolean _isPrepared = false;
     //endregion
 
     //region 声明其他对象
@@ -72,6 +73,20 @@ public class MyService extends Service
             @Override
             public void onCompletion(MediaPlayer mp)
             {
+                Log.d("onCompletion>>>>>>>>>","<<<<<<<<<<<<<<<<<<<< "+_currentMusicIndex+" }}}}}}}} "+_isPrepared);
+                //如果进入播放完成阶段时还没准备好，说明播放器还处在准备中，等待之后直接将本回调函数返回，迎接OnPrepared
+                if (_isPrepared == false)
+                {
+                    try
+                    {
+                        Thread.sleep(200);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
                 _myOnSyncListener.NeedSync();   //触发自定义的需要更新事件，同步当前状态（结束时）
 
                 //手动控制歌曲是否单曲循环
@@ -151,6 +166,7 @@ public class MyService extends Service
                 }
                 //endregion
 
+                Log.d("onErrorStart>>>>>>>>>","<<<<<<<<<<<<<<<<<<<< "+_currentMusicIndex);
                 _mediaPlayer.reset();   //重置为初始状态解除错误
 
                 //如果开启随机，则随机挑选一首设置为当前曲目
@@ -169,17 +185,26 @@ public class MyService extends Service
                     _currentMusicIndex ++;
                 }
 
-                try
-                {
-                    _mediaPlayer.prepare();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                s_initialize(false);
                 s_start();
+                Log.d("onErrorEnd>>>>>>>>>","<<<<<<<<<<<<<<<<<<<< "+_currentMusicIndex);
                 _myOnSyncListener.NeedSync();
                 return false;
+            }
+        });
+        //endregion
+
+        //region 注册准备完成监听器
+        _mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+        {
+            @Override
+            public void onPrepared(MediaPlayer mp)
+            {
+                Log.d("onPrepared>>>>>>>>>","<<<<<<<<<<<<<<<<<<<< "+_currentMusicIndex);
+
+                //准备完成后更新准备标记并且开始播放
+                _isPrepared = true;
+                _mediaPlayer.start();
             }
         });
         //endregion
@@ -199,18 +224,9 @@ public class MyService extends Service
     {
         if (_mediaPlayer != null)
         {
-            _mediaPlayer.stop();            //调用自带的停止方法
-            try
-            {
-                _mediaPlayer.reset();       //重置播放器
-                _mediaPlayer.setDataSource(_MLOLU.get(_currentMusicIndex).GetPath());   //重新将数据源设置为当前曲目
-                _mediaPlayer.prepare();     //预加载数据
-                _mediaPlayer.seekTo(0);     //将进度值归零
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            _mediaPlayer.stop();                        //调用自带的停止方法
+            _mediaPlayer.reset();                       //重置播放器
+            _setMusicDataSource(_currentMusicIndex);    //重新将数据源设置为当前曲目
         }
     }
 
@@ -230,9 +246,17 @@ public class MyService extends Service
      */
     public void s_start()
     {
+        Log.d("SStart>>>>>>>>>","<<<<<<<<<<<<<<<<<<<< "+_currentMusicIndex+" }}}}}}}}}}} "+_isPrepared);
         if (_mediaPlayer != null)
         {
-            _mediaPlayer.start();
+            if (_isPrepared)
+            {
+                _mediaPlayer.start();           //直接开始
+            }
+            else
+            {
+                _mediaPlayer.prepareAsync();    //异步预加载，预加载完成后通过回调函数开始播放
+            }
         }
     }
 
@@ -379,7 +403,7 @@ public class MyService extends Service
     }
     //endregion
 
-     //region 流程控制方法
+    //region 流程控制方法
     /**
      * 播放服务的退出方法，用于退出播放状态并且释放播放器资源（退出后将无法执行播放逻辑）
      */
@@ -394,23 +418,19 @@ public class MyService extends Service
     }
 
     /**
-     * 播放服务的初始化方法，在“需要初始化播放器时”调用，用于初始化组件并进入准备播放状态（默认播放列表第一首歌）
+     * 播放服务的初始化方法，在“需要初始化播放器时”调用，用于初始化组件并进入准备播放状态（首次初始化播放列表第一首歌）
+     * @param isFirst 是否为首次初始化
      */
-    public void s_initialize()
+    public void s_initialize(boolean isFirst)
     {
         if (_mediaPlayer != null)
         {
-            _mediaPlayer.setLooping(false);
-            try
+            if (isFirst)
             {
+                _mediaPlayer.setLooping(false);
                 _currentMusicIndex = 0;
-                _mediaPlayer.setDataSource(_MLOLU.get(_currentMusicIndex).GetPath());
-                _mediaPlayer.prepare();
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            _setMusicDataSource(_currentMusicIndex);
         }
     }
     //endregion
@@ -422,9 +442,31 @@ public class MyService extends Service
      */
     private void _setCurrentMusic(int index)
     {
+        //如果索引值不超出范围
         if (index>=0&&index<=(_MLOLU.size()-1))
         {
             this._currentMusicIndex = index;
+        }
+    }
+
+    /**
+     * 内部函数(安全的)，用于为播放器设置数据源（数据源设置完成后进入未准备状态）
+     * @param index 目标曲目索引
+     */
+    private void _setMusicDataSource(int index)
+    {
+        //如果索引值不超出范围
+        if (index>=0&&index<=(_MLOLU.size()-1))
+        {
+            try
+            {
+                _mediaPlayer.setDataSource(_MLOLU.get(index).GetPath());
+                _isPrepared = false;
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.c.aka009.listener;
+package com.c.aka009.Ting;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -17,12 +17,10 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView P_TV_currentMusicName;
     private TextView P_TV_currentMusicPlayerName;
 
-    private ImageView P_IV_splash;
+    private View P_V_splash;
     //endregion
 
     //region 声明其他对象
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         P_LV_1 = (ListView) findViewById(R.id.P_LV_1);
 
-        P_IV_splash = (ImageView) findViewById(R.id.P_IV_splash);
+        P_V_splash = findViewById(R.id.P_CL_splash);
         //endregion
 
         //region 为主界面的按钮设置监听器
@@ -307,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //线程等待100毫秒后再执行，防止服务还没开启造成NPE
                 try
                 {
-                    Thread.sleep(100);
+                    Thread.sleep(200);
                 }
                 catch (InterruptedException e)
                 {
@@ -316,8 +314,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 List<ListUnits> _TLOLU = new ArrayList<>(); //临时列表变量
 
-                _TLOLU = __getUriData(MEDIA_URI_INTERNAL, _TLOLU);
-                _TLOLU = __getUriData(MEDIA_URI_EXTERNAL, _TLOLU);
+                _TLOLU = __getUriData(MEDIA_URI_INTERNAL, _TLOLU, 30000L);
+                _TLOLU = __getUriData(MEDIA_URI_EXTERNAL, _TLOLU,0L);
 
                 final List<ListUnits> final_TLOLU = _TLOLU;
 
@@ -335,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         _listUnitsAdapter = new ListUnitsAdapter(MainActivity.this, R.layout.list_items_layout, _MLOLU);
                         P_LV_1.setAdapter(_listUnitsAdapter);
 
-                        myService.s_initialize();           //初始化服务
+                        myService.s_initialize(true);           //初始化服务
                         _syncUI();
                     }
                 });
@@ -407,7 +405,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run()
             {
-                Log.d(">>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                 //等待3秒钟
                 try
                 {
@@ -424,8 +421,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run()
                     {
-                        P_IV_splash.setVisibility(View.GONE);
-                        Log.d(">>>>>>>>>>>>","<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                        P_V_splash.setVisibility(View.GONE);
                     }
                 });
             }
@@ -546,9 +542,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 二级内部函数，从指定的位置扫描媒体资源，附加到传入的列表中并将其返回，相当于 I += a
      * @param uri 指定的URI位置
      * @param _TLOLU 需要加工的列表
+     * @param timeCullOff 时长小于此值（毫秒）则不将该曲目收入列表
      * @return 返回原来的列表
      */
-    private List<ListUnits> __getUriData(Uri uri , List<ListUnits> _TLOLU)
+    private List<ListUnits> __getUriData(Uri uri , List<ListUnits> _TLOLU , long timeCullOff)
     {
         //region 【引用】媒体探查
         /*
@@ -595,13 +592,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cursor.moveToFirst();
             do
             {
+                //如果文件持续时间小于Culloff值则跳过循环不将该曲目收入列表
+                if (cursor.getLong(cursor.getColumnIndex("duration")) < timeCullOff)
+                {
+                    continue;
+                }
+
                 ListUnits tempListUnit = new ListUnits();   //创建列表项的临时变量
 
                 //为列表项赋值
                 tempListUnit.SetData(cursor.getString(cursor.getColumnIndex("_data")));
                 tempListUnit.SetDisplay_name(cursor.getString(cursor.getColumnIndex("_display_name")));
                 tempListUnit.SetArtist(cursor.getString(cursor.getColumnIndex("artist")));
-                tempListUnit.SetDuration(cursor.getString(cursor.getColumnIndex("duration")));
+                tempListUnit.SetDuration(cursor.getLong(cursor.getColumnIndex("duration")));
                 tempListUnit.SetTitleHighLight(false,this); //将绿色的标题高亮设置为否
 
                 _TLOLU.add(tempListUnit);                   //将结果（临时项）追加到列表中

@@ -1,4 +1,4 @@
-package com.c.aka009.listener;
+package com.c.aka009.Ting;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -47,17 +47,14 @@ public class ListUnits
     }
 
     /**
-     * 输入扫描得到的“duration”字段
-     * @param duration 输入字段
+     * 输入扫描得到的“duration”字段的值
+     * @param d 输入的长度值（毫秒）
      */
-    public void SetDuration(String duration)
+    public void SetDuration(long d)
     {
         //声明分钟和秒钟两个空字符串
         String min_s = "";
         String sec_s = "";
-
-        //将输入的字符串格式的歌曲长度转换为long格式
-        long d = Long.parseLong(duration);
 
         //将毫秒转换为分和秒的值并存入两个long变量（少于1秒的值被舍去）
         long min_l = d/(60*1000);
@@ -203,11 +200,23 @@ public class ListUnits
             case ".aac":
                 tempColorID = R.color.my_yellow_L;
                 break;
+            case ".m4a":
+                tempColorID = R.color.my_yellow_L;
+                break;
             case ".flac":
                 tempColorID = R.color.my_purple_L;
                 break;
             case ".wav":
                 tempColorID = R.color.my_orange_L;
+                break;
+            case ".3gp":
+                tempColorID = R.color.my_orange_L;
+                break;
+            case ".wma":
+                tempColorID = R.color.my_green_L;
+                break;
+            case ".mid":
+                tempColorID = R.color.my_green_L;
                 break;
             default:
                 tempColorID = R.color.my_white;

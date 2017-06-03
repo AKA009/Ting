@@ -4,4 +4,5 @@
     <string name = "ACTION_N2S_NEXT">ACTION_N2S_NEXT</string>
     <string name = "ACTION_N2P_WAKEUP">ACTION_N2P_WAKEUP</string>
     <string name = "ACTION_N2P_CLOSE">ACTION_N2P_CLOSE</string>
+    <string name = "version">V 0.88</string>
 </resources>

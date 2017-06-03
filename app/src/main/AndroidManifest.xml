@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.c.aka009.listener">
+          package="com.c.aka009.Ting">
 
     <application
         android:allowBackup="true"
@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_listener"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.c.aka009.Ting.MainActivity"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -19,7 +19,7 @@
         </activity>
 
         <service
-            android:name=".MyService"
+            android:name="com.c.aka009.Ting.MyService"
             android:enabled="true"
             android:exported="true">
         </service>
