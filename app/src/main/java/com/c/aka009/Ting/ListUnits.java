@@ -42,8 +42,20 @@ public class ListUnits
     public void SetDisplay_name(String display_name)
     {
         String temp[] = display_name.split("\\.");  //将输入的“display_name”字段从“.”字符切分
-        _name = temp[0];                            //切分后文件名存入“name”
-        _type = "."+temp[1];                        //切分后扩展名存入“type”
+
+        //使用StringBuilder还原文件名
+        StringBuilder tempStringBuilder = new StringBuilder("");
+        for (int i=0 ; i<temp.length-1;i++)
+        {
+            //如果索引超过0则在开始前追加一个【.】字符
+            if (i>0)
+            {
+                tempStringBuilder.append(".");
+            }
+            tempStringBuilder.append(temp[i]);
+        }
+        _name = tempStringBuilder.toString();       //将构造成的字符串存入“name”
+        _type = "."+temp[temp.length -1];           //切分后的最后一个字符串（扩展名）存入“type”
     }
 
     /**

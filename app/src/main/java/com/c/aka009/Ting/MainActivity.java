@@ -1,5 +1,6 @@
 package com.c.aka009.Ting;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -127,12 +128,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         //endregion
 
-        //region 定义广播接收器处理通知栏的按钮事件
+        //region 定义广播接收器，处理通知栏的按钮事件，以及耳机拔下事件
         _notificationBarClickReceiver = new BroadcastReceiver()
         {
             @Override
             public void onReceive(Context context, Intent intent)
             {
+                //region 处理通知栏的按钮事件
                 if (intent.getAction().equals(ACTION_N2S_START))
                 {
                     on_P_B_Start_Click();
@@ -177,9 +179,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     */
                     //endregion
 
-                    Intent start = new Intent(getApplicationContext(),MainActivity.class);
-                    start.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(start);
+//                    Intent start = new Intent(context,MainActivity.class);
+//                    start.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );//FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+//                    context.startActivity(start);
+
+
+                    //获取ActivityManager
+                    ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+                    //获得当前运行的task
+                    List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(100);
+                    boolean tempIsOn = false;
+                    for (ActivityManager.RunningTaskInfo rti : taskList)
+                    {
+                        //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+                        if (rti.topActivity.getPackageName().equals(context.getPackageName()))
+                        {
+                            activityManager.moveTaskToFront(rti.id, 0);
+                            tempIsOn = true;
+                        }
+                    }
+
+                    if (!tempIsOn)
+                    {
+                        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+                        Intent resultIntent = new Intent(context, MainActivity.class);
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        context.startActivity(resultIntent);
+                    }
+
 
                     ST_CollapseNotification(getApplicationContext());   //收起通知面板
                 }
@@ -187,7 +214,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     on_P_B_Close_Click();
                 }
-            }
+                //endregion
+
+                //region 处理耳机拔下事件
+                //注册广播实现拔下耳机停止音乐播放
+                else if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY))
+                {
+                    //region 【引用】处理 AUDIO_BECOMING_NOISY Intent
+                    /*
+                    * 处理 AUDIO_BECOMING_NOISY Intent
+                    * 当用户拔下耳机的是否，一些优秀的App会自动停止播放音乐。
+                    * （例如QQ音乐在你拔下耳机的时候自动暂停）。
+                    * 但是，这种功能并不是制自动的，而是需要你自己去实现。
+                    * 如果你不实现这个，可能会导致坏的用户体验。
+                    * 比如你的用户带着耳机在教室或者图书馆使用你的app播放多媒体文件，
+                    * 不小心拔掉了耳机或者耳机插头松动，那么后果就是导致非常差的用户体验。
+                    *
+                    */
+                    //endregion
+
+                    if (_isPause_B_On)
+                    {
+                        on_P_B_Start_Click();
+                    }
+                }
+                //endregion
+
+            }//onReceive 结束
         };
         //endregion
 
@@ -197,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(ACTION_N2S_NEXT);
         filter.addAction(ACTION_N2P_WAKEUP);
         filter.addAction(ACTION_N2P_CLOSE);
+        filter.addAction(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         registerReceiver(_notificationBarClickReceiver, filter);
         //endregion

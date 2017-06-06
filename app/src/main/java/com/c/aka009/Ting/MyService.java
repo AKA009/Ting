@@ -1,10 +1,13 @@
 package com.c.aka009.Ting;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -30,6 +33,7 @@ public class MyService extends Service
     public MyBinder binder = new MyBinder();
     private MediaPlayer _mediaPlayer;
     private myIOnSyncListener _myOnSyncListener;
+    private AudioManager _audioManager;
     //endregion
 
     /**
@@ -208,6 +212,71 @@ public class MyService extends Service
             }
         });
         //endregion
+
+        _audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int result = _audioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener()
+        {
+            @Override
+            public void onAudioFocusChange(int focusChange)
+            {
+                switch (focusChange)
+                {
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                    {
+                        // resume playback
+                        if (_mediaPlayer == null)
+                        {
+                            //initMediaPlayer();
+                            //// TODO: 2017/6/6 如果资源已被释放则初始化并恢复播放 
+                        }
+                        else if (!_mediaPlayer.isPlaying())
+                        {
+                            _mediaPlayer.start();
+                            _mediaPlayer.setVolume(1.0f, 1.0f);
+                        }
+                        break;
+                    }
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                    {
+//                        // Lost focus for an unbounded amount of time: stop playback and release media player
+//                        if (_mediaPlayer.isPlaying())
+//                        {
+//                            _mediaPlayer.stop();
+//                        }
+//                        _mediaPlayer.release();
+//                        _mediaPlayer = null;
+//                        break;
+                        //// TODO: 2017/6/6  当失去焦点时停止播放并释放资源 
+                    }
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    {
+                        // Lost focus for a short time, but we have to stop
+                        // playback. We don't release the media player because playback
+                        // is likely to resume
+                        if (_mediaPlayer.isPlaying())
+                        {
+                            _mediaPlayer.pause();
+                        }
+                        break;
+                    }
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    {
+                        // Lost focus for a short time, but it's ok to keep playing
+                        // at an attenuated level
+                        if (_mediaPlayer.isPlaying())
+                        {
+                            _mediaPlayer.setVolume(0.3f, 0.3f);
+                        }
+                        break;
+                    }
+                }
+            }
+        }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+        {
+            //// TODO: 2017/6/6 如果不能获取音频焦点
+        }
+
     }
 
     @Override
@@ -429,6 +498,7 @@ public class MyService extends Service
             {
                 _mediaPlayer.setLooping(false);
                 _currentMusicIndex = 0;
+                _mediaPlayer.setWakeMode(this,PowerManager.PARTIAL_WAKE_LOCK);   //防止CPU休眠
             }
             _setMusicDataSource(_currentMusicIndex);
         }
