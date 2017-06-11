@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.c.aka009.listener">
+          package="com.c.aka009.Ting">
 
     <application
         android:allowBackup="true"
@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_listener"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity"
-                  android:launchMode="singleTop">
+        <activity android:name="com.c.aka009.Ting.MainActivity"
+                  android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -19,7 +19,7 @@
         </activity>
 
         <service
-            android:name=".MyService"
+            android:name="com.c.aka009.Ting.MyService"
             android:enabled="true"
             android:exported="true">
         </service>
@@ -29,4 +29,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
+
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+    <uses-permission android:name="android.permission.GET_TOP_ACTIVITY_INFO"/>
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 </manifest>

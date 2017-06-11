@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">Listener</string>
+    <string name="app_name">Ting</string>
     <string name = "ACTION_N2S_START">ACTION_N2S_START</string>
     <string name = "ACTION_N2S_NEXT">ACTION_N2S_NEXT</string>
     <string name = "ACTION_N2P_WAKEUP">ACTION_N2P_WAKEUP</string>
     <string name = "ACTION_N2P_CLOSE">ACTION_N2P_CLOSE</string>
+    <string name = "version">V 0.89</string>
 </resources>

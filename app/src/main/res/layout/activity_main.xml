@@ -5,14 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.c.aka009.listener.MainActivity">
+    tools:context="com.c.aka009.Ting.MainActivity">
 
     <ImageView
         android:id="@+id/P_IV_bg2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         app:layout_constraintHorizontal_bias="0.0"
@@ -26,10 +24,12 @@
         android:id="@+id/P_LV_1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="9dp"
         android:layout_marginLeft="9dp"
         android:layout_marginRight="9dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginStart="9dp"
+        android:divider="@color/my_black_D"
+        android:dividerHeight="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/P_IV_bg2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -49,45 +49,48 @@
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/bg_p_1"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp"
-        app:layout_constraintHorizontal_bias="0.0"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"/>
 
     <ImageView
         android:id="@+id/P_logo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_width="112dp"
+        android:layout_height="93dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/main"
         android:layout_marginStart="2dp"
-        android:layout_marginLeft="3dp"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        android:layout_marginLeft="2dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
 
     <TextView
         android:id="@+id/P_TV_currentMusicPlayerName"
         android:layout_width="220dp"
-        android:layout_height="45dp"
-        android:layout_marginLeft="8dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
         android:textColor="@color/my_black"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/P_IV_divider"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/P_logo"
         app:layout_constraintRight_toRightOf="@+id/P_IV_bg1"
         app:layout_constraintTop_toBottomOf="@+id/P_TV_currentMusicName"
-        />
+        app:layout_constraintVertical_bias="1.0"/>
 
     <TextView
         android:id="@+id/P_TV_currentMusicName"
         android:layout_width="220dp"
         android:layout_height="66dp"
-        android:layout_marginLeft="13dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
         android:textAlignment="viewStart"
         android:textColor="@color/my_black"
@@ -96,7 +99,7 @@
         app:layout_constraintLeft_toRightOf="@+id/P_logo"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        android:layout_marginStart="8dp"/>
 
     <ImageButton
         android:id="@+id/P_B_start"
@@ -112,7 +115,7 @@
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/P_logo"
+        app:layout_constraintTop_toBottomOf="@+id/P_IV_divider"
         app:srcCompat="@drawable/p_start"/>
 
     <ImageButton
@@ -127,7 +130,8 @@
         app:srcCompat="@drawable/p_pre"
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintRight_toLeftOf="@+id/P_B_start"
-        android:layout_marginRight="22dp"/>
+        android:layout_marginRight="22dp"
+        android:layout_marginEnd="22dp"/>
 
     <ImageButton
         android:id="@+id/P_B_list"
@@ -158,7 +162,8 @@
         app:srcCompat="@drawable/p_next"
         app:layout_constraintVertical_bias="1.0"
         app:layout_constraintLeft_toRightOf="@+id/P_B_start"
-        android:layout_marginLeft="16dp"/>
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"/>
 
     <ImageButton
         android:id="@+id/P_B_repeat"
@@ -176,5 +181,69 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/P_B_next"
         app:srcCompat="@drawable/p_offrepeat"/>
+
+    <ImageView
+        android:id="@+id/P_IV_divider"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@color/my_black_D"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/P_logo"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/P_CL_splash"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/P_IV_splash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/my_white"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/splash_2"/>
+
+        <TextView
+            android:id="@+id/P_TV_splash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/version"
+            android:textColor="@color/my_black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.95"/>
+
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

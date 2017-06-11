@@ -1,5 +1,6 @@
-package com.c.aka009.listener;
+package com.c.aka009.Ting;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView P_TV_currentMusicName;
     private TextView P_TV_currentMusicPlayerName;
+
+    private View P_V_splash;
     //endregion
 
     //region 声明其他对象
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         P_TV_currentMusicPlayerName = (TextView) findViewById(R.id.P_TV_currentMusicPlayerName);
 
         P_LV_1 = (ListView) findViewById(R.id.P_LV_1);
+
+        P_V_splash = findViewById(R.id.P_CL_splash);
         //endregion
 
         //region 为主界面的按钮设置监听器
@@ -107,11 +112,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         _isRandom_B_On  = false;
         //endregion
 
+        _showSplash(3000);                  //显示3秒钟的splash画面
         _bindServiceConnection();           //开启并绑定服务
         _startNewThreadToGetData();         //开启子线程进行媒体探查并将结果输入列表
         _initializeNotificationBar();       //初始化通知栏并调出通知栏里的控制面板
 
-        //为UI列表的项添加点击事件
+        //region 为UI列表的项添加点击事件
         P_LV_1.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
@@ -120,13 +126,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 on_P_LVIC_Jump_To(position);    //调用跳转方法，跳转到按下的项的索引位置
             }
         });
+        //endregion
 
-        //region 定义广播接收器处理通知栏的按钮事件
+        //region 定义广播接收器，处理通知栏的按钮事件，以及耳机拔下事件
         _notificationBarClickReceiver = new BroadcastReceiver()
         {
             @Override
             public void onReceive(Context context, Intent intent)
             {
+                //region 处理通知栏的按钮事件
                 if (intent.getAction().equals(ACTION_N2S_START))
                 {
                     on_P_B_Start_Click();
@@ -171,9 +179,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     */
                     //endregion
 
-                    Intent start = new Intent(getApplicationContext(),MainActivity.class);
-                    start.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(start);
+//                    Intent start = new Intent(context,MainActivity.class);
+//                    start.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );//FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+//                    context.startActivity(start);
+
+
+                    //获取ActivityManager
+                    ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+                    //获得当前运行的task
+                    List<ActivityManager.RunningTaskInfo> taskList = activityManager.getRunningTasks(100);
+                    boolean tempIsOn = false;
+                    for (ActivityManager.RunningTaskInfo rti : taskList)
+                    {
+                        //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+                        if (rti.topActivity.getPackageName().equals(context.getPackageName()))
+                        {
+                            activityManager.moveTaskToFront(rti.id, 0);
+                            tempIsOn = true;
+                        }
+                    }
+
+                    if (!tempIsOn)
+                    {
+                        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+                        Intent resultIntent = new Intent(context, MainActivity.class);
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        context.startActivity(resultIntent);
+                    }
+
 
                     ST_CollapseNotification(getApplicationContext());   //收起通知面板
                 }
@@ -181,7 +214,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     on_P_B_Close_Click();
                 }
-            }
+                //endregion
+
+                //region 处理耳机拔下事件
+                //注册广播实现拔下耳机停止音乐播放
+                else if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY))
+                {
+                    //region 【引用】处理 AUDIO_BECOMING_NOISY Intent
+                    /*
+                    * 处理 AUDIO_BECOMING_NOISY Intent
+                    * 当用户拔下耳机的是否，一些优秀的App会自动停止播放音乐。
+                    * （例如QQ音乐在你拔下耳机的时候自动暂停）。
+                    * 但是，这种功能并不是制自动的，而是需要你自己去实现。
+                    * 如果你不实现这个，可能会导致坏的用户体验。
+                    * 比如你的用户带着耳机在教室或者图书馆使用你的app播放多媒体文件，
+                    * 不小心拔掉了耳机或者耳机插头松动，那么后果就是导致非常差的用户体验。
+                    *
+                    */
+                    //endregion
+
+                    if (_isPause_B_On)
+                    {
+                        on_P_B_Start_Click();
+                    }
+                }
+                //endregion
+
+            }//onReceive 结束
         };
         //endregion
 
@@ -191,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(ACTION_N2S_NEXT);
         filter.addAction(ACTION_N2P_WAKEUP);
         filter.addAction(ACTION_N2P_CLOSE);
+        filter.addAction(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         registerReceiver(_notificationBarClickReceiver, filter);
         //endregion
@@ -299,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //线程等待100毫秒后再执行，防止服务还没开启造成NPE
                 try
                 {
-                    Thread.sleep(100);
+                    Thread.sleep(200);
                 }
                 catch (InterruptedException e)
                 {
@@ -308,8 +368,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 List<ListUnits> _TLOLU = new ArrayList<>(); //临时列表变量
 
-                _TLOLU = __getUriData(MEDIA_URI_INTERNAL, _TLOLU);
-                _TLOLU = __getUriData(MEDIA_URI_EXTERNAL, _TLOLU);
+                _TLOLU = __getUriData(MEDIA_URI_INTERNAL, _TLOLU, 30000L);
+                _TLOLU = __getUriData(MEDIA_URI_EXTERNAL, _TLOLU,0L);
 
                 final List<ListUnits> final_TLOLU = _TLOLU;
 
@@ -327,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         _listUnitsAdapter = new ListUnitsAdapter(MainActivity.this, R.layout.list_items_layout, _MLOLU);
                         P_LV_1.setAdapter(_listUnitsAdapter);
 
-                        myService.s_initialize();           //初始化服务
+                        myService.s_initialize(true);           //初始化服务
                         _syncUI();
                     }
                 });
@@ -386,6 +446,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myNotification.flags = Notification.FLAG_NO_CLEAR;                                          //设置通知点击或滑动时不被清除
         _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         _notificationManager.notify(0, myNotification);                                             //开启通知
+    }
+
+    /**
+     * 显示splash画面并在指定时间后消失
+     * @param sec 持续时间（毫秒）
+     */
+    private void _showSplash(final int sec)
+    {
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                //等待3秒钟
+                try
+                {
+                    Thread.sleep(sec);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+
+                //让splash画面消失
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        P_V_splash.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }).start();
     }
 
     /**
@@ -497,13 +591,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //endregion
 
+    //region 工具函数
     /**
      * 二级内部函数，从指定的位置扫描媒体资源，附加到传入的列表中并将其返回，相当于 I += a
      * @param uri 指定的URI位置
      * @param _TLOLU 需要加工的列表
+     * @param timeCullOff 时长小于此值（毫秒）则不将该曲目收入列表
      * @return 返回原来的列表
      */
-    private List<ListUnits> __getUriData(Uri uri , List<ListUnits> _TLOLU)
+    private List<ListUnits> __getUriData(Uri uri , List<ListUnits> _TLOLU , long timeCullOff)
     {
         //region 【引用】媒体探查
         /*
@@ -550,13 +646,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cursor.moveToFirst();
             do
             {
+                //如果文件持续时间小于Culloff值则跳过循环不将该曲目收入列表
+                if (cursor.getLong(cursor.getColumnIndex("duration")) < timeCullOff)
+                {
+                    continue;
+                }
+
                 ListUnits tempListUnit = new ListUnits();   //创建列表项的临时变量
 
                 //为列表项赋值
                 tempListUnit.SetData(cursor.getString(cursor.getColumnIndex("_data")));
                 tempListUnit.SetDisplay_name(cursor.getString(cursor.getColumnIndex("_display_name")));
                 tempListUnit.SetArtist(cursor.getString(cursor.getColumnIndex("artist")));
-                tempListUnit.SetDuration(cursor.getString(cursor.getColumnIndex("duration")));
+                tempListUnit.SetDuration(cursor.getLong(cursor.getColumnIndex("duration")));
                 tempListUnit.SetTitleHighLight(false,this); //将绿色的标题高亮设置为否
 
                 _TLOLU.add(tempListUnit);                   //将结果（临时项）追加到列表中
@@ -674,6 +776,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
+    //endregion
 
 }//MainActivity结束
 
